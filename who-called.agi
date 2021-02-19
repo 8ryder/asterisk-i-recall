@@ -17,7 +17,9 @@ $tbl_name2 = "interni";
 $tbl_name3 = "numeriautorizzati";
 
 //chi ha chiamato
-$callerid = '3348319995';
+$callerid = $agi->request['agi_callerid'];
+$callerid = substr($callerid,2);
+echo $callerid."\r\n";
 //interno
 $exten = '00000';
 //direzione chiamata
@@ -154,7 +156,6 @@ return $reparto;
 //================================================
 function getHour($calldate) {
 	$call_hour = substr($calldate,11,2);
-	echo $call_hour;
 	
 return $call_hour;
 }
@@ -164,7 +165,6 @@ return $call_hour;
 //================================================
 function getMinutes($calldate) {
 	$call_minutes = substr($calldate,14,2);
-	echo $call_minutes;
 	
 return $call_minutes;
 }
