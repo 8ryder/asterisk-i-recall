@@ -1,5 +1,8 @@
+#!/usr/bin/php -q
 <?php
 
+require 'phpagi.php';
+$agi = new AGI();
 
 // le credenziali ed i dati della BD
 $host="localhost"; // nome host della banca dati
@@ -14,7 +17,8 @@ $tbl_name2 = "interni";
 $tbl_name3 = "numeriautorizzati";
 
 //chi ha chiamato
-$callerid = '3348319995';
+$callerid = $agi->request['agi_callerid'];
+//$callerid = substr($callerid,2);
 //interno
 $exten = '00000';
 //direzione chiamata
@@ -39,21 +43,16 @@ mysql_close($link);
 
 //estrapolo il risultato
 while ($row = mysql_fetch_assoc($result)) {
-        echo 'src - ';
-        echo $row['src'];
         $src = $row['src'];
-        echo 'dst -  ';
-        echo $row['dst'];
         $dst = $row['dst'];
-        echo 'calldate - ';
-        echo $row['calldate'];
         $calldate = $row['calldate'];
+	$disposition = $row['disposition'];
 }
 
 
 //se non ci sono chiamate, EXIT
 $calls_found = mysql_num_rows($result);
-echo $calls_found;
+
 if ($calls_found == '0'):
         echo 'nessuna chiamata trovata';
 		exit();
@@ -66,14 +65,22 @@ endif;
 //================================================
 if (strpos($dst, $callerid) !== false):
         $direzione = 'uscita';
-		echo 'uscita';
 		//trattandosi di una chiamata in uscita, src equivale al nostro interno che cerchiamo
 		$exten = $src;
 elseif (strpos($src,$callerid) !== false):
         $direzione = 'entrata';
-		echo 'entrata';
+	$agi->set_variable("direction", $direzione);
         exit();
 
+endif;
+
+//================================================
+//vediamo se la chiamata trovata Ã¨ stata con risposta
+//se Ã¨ ANSWERED, non ci interessa, EXIT
+//================================================
+if ($disposition == 'ANSWERED'):
+                //trattandosi di una chiamata risposta, non ci interessa, usciamo
+                exit();
 endif;
 
 //mi collego al database
@@ -97,9 +104,6 @@ elseif ($num_rows3 == '0'):
         $autorizzato = 'no';
 endif;
 
-echo "\r\n";
-echo "autorizzato - ".$autorizzato;
-echo "\r\n";
 
 //se il numero non ha lautorizzazione, recuperiamo il reparto
 if ($autorizzato == 'no'):
@@ -113,16 +117,15 @@ $call_minutes = getMinutes($calldate);
 //================================================
 // stampa finale risultati
 //================================================
-echo '========================================';
-echo "chiamate trovate: ".$calls_found."\r\n";
-echo "direzione: ".$direzione."\r\n";
-echo "numero autorizzato: ".$autorizzato."\r\n";
-echo "chiamante: ".$callerid."\r\n";
-echo "interno: ".$exten."\r\n";
-echo "reparto: ".$reparto."\r\n";
-echo "ora chiamata: ".$call_hour."\r\n";
-echo "minuti chiamata: ".$call_minutes."\r\n";
-echo '========================================';
+$agi->set_variable("direction", $direzione);
+$agi->set_variable("callsFound", $calls_found);
+$agi->set_variable("authorizedNumber", $autorizzato);
+$agi->set_variable("caller", $callerid);
+$agi->set_variable("exten", $exten);
+$agi->set_variable("department", $reparto);
+$agi->set_variable("callHour", $call_hour);
+$agi->set_variable("callMinutes", $call_minutes);
+
 
 
 //================================================
@@ -140,9 +143,7 @@ mysql_close($link);
 
 
 while ($row = mysql_fetch_assoc($result2)) {
-        echo "reparto: ".$row['reparto']."\r\n";
         $reparto = $row['reparto'];
-        echo ' ';
     }
 return $reparto;
 }
@@ -152,7 +153,6 @@ return $reparto;
 //================================================
 function getHour($calldate) {
 	$call_hour = substr($calldate,11,2);
-	echo $call_hour;
 	
 return $call_hour;
 }
@@ -162,9 +162,9 @@ return $call_hour;
 //================================================
 function getMinutes($calldate) {
 	$call_minutes = substr($calldate,14,2);
-	echo $call_minutes;
 	
 return $call_minutes;
 }
 
 ?>
+
