@@ -1,0 +1,14 @@
+numbers that are authorized to get the complete "who called" information
+
+CREATE TABLE `numeriautorizzati` (
+	`id` INT(11) NOT NULL AUTO_INCREMENT,
+	`numero` VARCHAR(50) NULL DEFAULT NULL COLLATE 'latin1_swedish_ci',
+	`descrizione` VARCHAR(50) NULL DEFAULT NULL COLLATE 'latin1_swedish_ci',
+	UNIQUE INDEX `numero` (`numero`) USING BTREE,
+	INDEX `id` (`id`) USING BTREE
+)
+COMMENT='numeri per cui rilascio il numero e non il reparto'
+COLLATE='latin1_swedish_ci'
+ENGINE=InnoDB
+AUTO_INCREMENT=16
+;
