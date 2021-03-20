@@ -1,0 +1,13 @@
+extension - department association
+
+CREATE TABLE `interni` (
+	`ID` INT(11) NOT NULL AUTO_INCREMENT,
+	`interno` VARCHAR(255) NULL DEFAULT NULL COLLATE 'latin1_swedish_ci',
+	`reparto` VARCHAR(255) NULL DEFAULT NULL COLLATE 'latin1_swedish_ci',
+	UNIQUE INDEX `ID` (`ID`) USING BTREE,
+	UNIQUE INDEX `interno` (`interno`) USING BTREE
+)
+COLLATE='latin1_swedish_ci'
+ENGINE=InnoDB
+AUTO_INCREMENT=7
+;
