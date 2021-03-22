@@ -7,7 +7,7 @@ $agi = new AGI();
 // le credenziali ed i dati della BD
 $host="localhost"; // nome host della banca dati
 $username="root"; // nome utente per la connessione al database
-//$password="sigmabox2013"; // password dell'utente per la connessione al database
+//$password="changemepassword"; // password dell'utente per la connessione al database
 $db_name="asteriskcdrdb"; // nome database
 $tbl_name="cdr"; // nome tabella
 //tabella associazione interni-reparto
@@ -28,6 +28,7 @@ $reparto = '000000';
 //ora e minuti chiamata
 $call_hour = '000000';
 $call_minutes = '00000';
+$disposition = '00000';
 
 //mi collego al database
 $link = mysql_connect("$host", "$username")or die("connessione alla banca dati fallita. Riprovare tra 1 minuto.".mysql_error());
@@ -125,6 +126,8 @@ $agi->set_variable("exten", $exten);
 $agi->set_variable("department", $reparto);
 $agi->set_variable("callHour", $call_hour);
 $agi->set_variable("callMinutes", $call_minutes);
+$agi->set_variable("disposition", $disposition);
+
 
 
 
